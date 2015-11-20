@@ -1,0 +1,25 @@
+{
+  "name": "html5file",
+  "version": "1.0.0",
+  "description": "playing with html5 file api features",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expert-/html5-file-api.git"
+  },
+  "author": "Ayush sharma",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expert-/html5-file-api/issues"
+  },
+  "homepage": "https://github.com/expert-/html5-file-api#readme",
+  "dependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-open": "^1.0.0"
+  }
+}
