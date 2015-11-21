@@ -2,7 +2,7 @@
 <html>
 
 <!-- 
-    coordinates.html by Bill Weinman 
+    errorhandling.html by Bill Weinman 
     <http://bw.org/contact/>
     created 2011-06-15
     updated 2011-07-20
@@ -39,6 +39,22 @@
             dispResults();
         }
 
+        function geo_error(error) {
+            switch(error.code) {
+                case error.TIMEOUT:
+                    alert('Geolocation Timeout');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert('Geolocation Position unavailable');
+                    break;
+                case error.PERMISSION_DENIED:
+                    alert('Geolocation Permission denied');
+                    break;
+                default:
+                    alert('Geolocation returned an unknown error code: ' + error.code);
+            }
+        }
+
         function dispResults() {
             element('results').innerHTML = t.getTableHTML();
         }
@@ -51,7 +67,7 @@
             } else {
                 statusMessage('HTML5 Geolocation is not supported.')
             }
-            geo.getCurrentPosition(show_coords);
+            geo.getCurrentPosition(show_coords, geo_error);
         }
 
         window.onload = function() {
