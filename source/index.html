@@ -2,9 +2,9 @@
 <html>
 
 <!-- 
-    continuous.html by Bill Weinman 
+    geoLocMap.html by Bill Weinman 
     <http://bw.org/contact/>
-    created 2011-06-15
+    created 2011-07-07
     updated 2011-07-20
 
     Copyright (c) 2011 The BearHeart Group, LLC
@@ -15,13 +15,25 @@
 
 <head>
     <title>
-        HTML5 Geolocation
+        Geolocation Map Test (1.1.3)
     </title>
-    <link rel="stylesheet" type="text/css" href="../CSS/bundle.css" />
-    <script type="text/javascript" src="../Javascript/bwH5.js"></script>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        html { height: 100% }
+        body { height: 100%; margin: 0px; padding: 0px }
+        #map_canvas { height: 100%; width: 100% }
+    </style>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script type="text/javascript">
-        var t = new bwTable();
-        var geo;
+        var watchID;
+        var geo;    // for the geolocation object
+        var map;    // for the google map object
+        var mapMarker;  // the google map marker object
+
+        // position options
+        var MAXIMUM_AGE = 200; // miliseconds
+        var TIMEOUT = 300000;
+        var HIGHACCURACY = true;
 
         function getGeoLocation() {
             try {
@@ -32,14 +44,39 @@
             }
         }
 
-        function show_coords(position) {
+        function show_map(position) {
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
-            t.updateRow(0, [ lat.toString(), lon.toString() ] );
-            dispResults();
+            var latlng = new google.maps.LatLng(lat, lon);
+
+            if(map) {
+                map.panTo(latlng);
+                mapMarker.setPosition(latlng);
+            } else {
+                var myOptions = {
+                    zoom: 18,
+                    center: latlng,
+
+                    // mapTypeID --
+                    // ROADMAP displays the default road map view
+                    // SATELLITE displays Google Earth satellite images
+                    // HYBRID displays a mixture of normal and satellite views
+                    // TERRAIN displays a physical map based on terrain information.
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+                map.setTilt(0); // turns off the annoying default 45-deg view
+
+                mapMarker = new google.maps.Marker({
+                    position: latlng,
+                    title:"You are here."
+                });
+                mapMarker.setMap(map);
+            }
         }
 
         function geo_error(error) {
+            stopWatching();
             switch(error.code) {
                 case error.TIMEOUT:
                     alert('Geolocation Timeout');
@@ -55,45 +92,29 @@
             }
         }
 
-        function dispResults() {
-            element('results').innerHTML = t.getTableHTML();
+        function stopWatching() {
+            if(watchID) geo.clearWatch(watchID);
+            watchID = null;
         }
 
-        function init() {
-            if((geo = getGeoLocation())) {
-                statusMessage('Using HTML5 Geolocation')
-                t.setHeader( [ 'Latitude', 'Longitude' ] );
-                t.addRow( [ '&nbsp;', '&nbsp;' ] );
-            } else {
-                statusMessage('HTML5 Geolocation is not supported.')
-            }
-            geo.watchPosition(show_coords, geo_error, { 
-                maximumAge: 1000,   // 1 sec
-                timeout: 300000,    // 5 min
-                enableHighAccuracy: true
+        function startWatching() {
+            watchID = geo.watchPosition(show_map, geo_error, {
+                enableHighAccuracy: HIGHACCURACY,
+                maximumAge: MAXIMUM_AGE,
+                timeout: TIMEOUT
             });
         }
 
         window.onload = function() {
-            init();
+            if((geo = getGeoLocation())) {
+                startWatching();
+            } else {
+                alert('Geolocation not supported.')
+            }
         }
     </script>
 </head>
-
 <body>
-
-<div id="content">
-
-    <h1> 
-        HTML5 Geolocation
-    </h1>
-    
-    <p class="message" id="statusMessage"/>
-    
-    <div id="results">
-    <!-- results show here -->
-    </div>
-
-</div>
+    <div id="map_canvas"></div>
 </body>
 </html>
