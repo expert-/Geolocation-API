@@ -2,7 +2,7 @@
 <html>
 
 <!-- 
-    errorhandling.html by Bill Weinman 
+    continuous.html by Bill Weinman 
     <http://bw.org/contact/>
     created 2011-06-15
     updated 2011-07-20
@@ -67,7 +67,11 @@
             } else {
                 statusMessage('HTML5 Geolocation is not supported.')
             }
-            geo.getCurrentPosition(show_coords, geo_error);
+            geo.watchPosition(show_coords, geo_error, { 
+                maximumAge: 1000,   // 1 sec
+                timeout: 300000,    // 5 min
+                enableHighAccuracy: true
+            });
         }
 
         window.onload = function() {
